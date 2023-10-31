@@ -4,26 +4,28 @@ import (
 	"example/data-acces/internal/database"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
-func GetUserList(c *gin.Context) {
-	// Use the DB connection to retrieve user data
-	users, err := database.GetUsers()
+func GetProductsList(c *gin.Context) {
+	products, err := database.GetProducts()
 	if err != nil {
 		// Handle the error
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	// Return the user data as a response
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, products)
 }
-func GetUser(c *gin.Context) {
+
+func GetProduct(c *gin.Context) {
 	// Get the "id" parameter from the URL
-	id := c.Param("id")
-	user, err := database.GetUser(id)
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	product, err := database.GetProduct(id, err)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, product)
 }
