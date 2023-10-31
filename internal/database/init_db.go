@@ -57,40 +57,10 @@ func GetUsers() ([]models.User, error) {
 
 func GetUser(id string) (models.User, error) {
 	var user models.User
-	err := DB.Get(&user, `SELECT*FROM public."User" WHERE id=$1`, id)
+	err := DB.Get(&user, `SELECT*FROM public."user" WHERE id=$1`, id)
 	if err != nil {
 		return user, err
 	}
 	return user, nil
 }
 
-func GetProducts() ([]models.Products, error) {
-	rows, err := DB.Queryx(`SELECT*FROM public."Products"`)
-	if err != nil {
-		return nil, err
-	}
-	var products []models.Products
-
-	for rows.Next() {
-		var product models.Products
-		if err := rows.Scan(&product.Id, &product.Title, &product.Description, &product.Stock); err != nil {
-			return nil, err
-		}
-		products = append(products, product)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return products, nil
-}
-
-func GetProduct(id int, err error) (models.Products, error) {
-	var product models.Products
-	err = DB.Get(&product, `SELECT*FROM public."Products" WHERE id=$1`, id)
-	if err != nil {
-		return product, err
-	}
-	return product, nil
-}

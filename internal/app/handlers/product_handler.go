@@ -1,17 +1,17 @@
 package handlers
 
 import (
-	"example/data-acces/internal/database"
+	"example/data-acces/internal/database/storage"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
 
 func GetProductsList(c *gin.Context) {
-	products, err := database.GetProducts()
+	products, err := storage.GetProducts()
 	if err != nil {
 		// Handle the error
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 	// Return the user data as a response
@@ -22,7 +22,7 @@ func GetProduct(c *gin.Context) {
 	// Get the "id" parameter from the URL
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
-	product, err := database.GetProduct(id, err)
+	product, err := storage.GetProduct(id, err)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
