@@ -2,31 +2,60 @@ package database
 
 import (
 	"database/sql"
+	"example/data-acces/internal/app/models"
 	"fmt"
-	"log"
 	_ "github.com/lib/pq"
+	"log"
 )
 
-func main() {
-	// Define connection parameters
-	host := "localhost"     // Replace with the PostgreSQL server's host or IP address
-	port := 5432            // PostgreSQL default port
-	user := "postgres"      // Your PostgreSQL username
-	password := "Berat9730" // Your PostgreSQL password
-	dbname := "GoLang"      // Your PostgreSQL database name
-	// Connection string
-	connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-	// Establish a database connection
-	db, err := sql.Open("postgres", connStr)
+var DB *sql.DB // Export the database connection
+
+func InitDB() {
+    // Define connection parameters
+    host := "localhost"
+    port := 5432
+    user := "postgres"
+    password := "Berat9730"
+    dbname := "GoLang"
+
+    connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+
+    // Establish a database connection
+    db, err := sql.Open("postgres", connStr)
+    if err != nil {
+        log.Fatal(err)
+        return
+    }
+
+    if err = db.Ping(); err != nil {
+        log.Fatal(err)
+        return
+    }
+
+    DB = db // Set the DB variable to the opened database connection
+}
+
+// GetUsers fetches a list of users from the database and returns them.
+func GetUsers() ([]models.User, error) {
+	rows, err := DB.Query(`SELECT "Id", "Name", "E-mail", "Password" FROM public."User"`)
 	if err != nil {
-		log.Fatal(err)
-		return
+		return nil, err
 	}
-	defer db.Close()
-	// Ping the database to test the connection
-	if err = db.Ping(); err != nil {
-		log.Fatal(err)
-		return
+	defer rows.Close()
+
+	var users []models.User
+
+	for rows.Next() {
+		var user models.User
+		if err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Password); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
 	}
-	fmt.Printf("Connection succesfull")
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }

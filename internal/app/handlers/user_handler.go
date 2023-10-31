@@ -1,11 +1,19 @@
 package handlers
 
 import (
+	"example/data-acces/internal/database"
 	"github.com/gin-gonic/gin"
-	"github.com/models/internal/app/models"
 	"net/http"
 )
 
-func GetUser(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, User)
+func GetUserList(c *gin.Context) {
+	// Use the DB connection to retrieve user data
+	users, err := database.GetUsers()
+	if err != nil {
+		// Handle the error
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	// Return the user data as a response
+	c.JSON(http.StatusOK, users)
 }
