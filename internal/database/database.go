@@ -1,14 +1,14 @@
 package database
 
 import (
-	"database/sql"
+	  "github.com/jmoiron/sqlx"
 	"example/data-acces/internal/app/models"
 	"fmt"
 	_ "github.com/lib/pq"
 	"log"
 )
 
-var DB *sql.DB // Export the database connection
+var DB *sqlx.DB // Export the database connection
 
 func InitDB() {
     // Define connection parameters
@@ -21,13 +21,8 @@ func InitDB() {
     connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
     // Establish a database connection
-    db, err := sql.Open("postgres", connStr)
+    db, err := sqlx.Connect("postgres", connStr)
     if err != nil {
-        log.Fatal(err)
-        return
-    }
-
-    if err = db.Ping(); err != nil {
         log.Fatal(err)
         return
     }
@@ -37,7 +32,7 @@ func InitDB() {
 
 // GetUsers fetches a list of users from the database and returns them.
 func GetUsers() ([]models.User, error) {
-	rows, err := DB.Query(`SELECT "Id", "Name", "E-mail", "Password" FROM public."User"`)
+	rows, err := DB.Queryx(`SELECT*FROM public."User"`)
 	if err != nil {
 		return nil, err
 	}
