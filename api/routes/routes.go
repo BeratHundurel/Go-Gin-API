@@ -11,5 +11,6 @@ func SetRoutes() *gin.Engine {
 	router.GET("/users/:id", handlers.GetUser)
 	router.GET("/products", handlers.GetProductsList)
 	router.GET("/products/:id", handlers.GetProduct)
+	router.POST("/add-to-basket/:productID/:quantity", handlers.AddToBasket)
 	return router
 }
