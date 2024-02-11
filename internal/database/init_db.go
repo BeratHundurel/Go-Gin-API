@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-var DB *sqlx.DB // Export the database connection
+var DB *sqlx.DB // Export the database connection.
 
 func InitDB() {
 	// Define connection parameters
